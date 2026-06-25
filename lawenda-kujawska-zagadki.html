@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legendy Lawendy — Zagadki</title>
+  <style>
+    :root {
+      --lavender: #8e6ab7;
+      --lavender-dark: #5f3f86;
+      --lavender-light: #efe7f7;
+      --lavender-soft: #faf7ff;
+      --white: #ffffff;
+      --ink: #2e2638;
+      --muted: #6f6478;
+      --success: #3d8b62;
+      --error: #b84b5f;
+      --shadow: 0 14px 35px rgba(88, 58, 122, 0.13);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(142, 106, 183, 0.20), transparent 32%),
+        linear-gradient(180deg, #ffffff 0%, #f8f3ff 100%);
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 42px 18px 28px;
+    }
+
+    .logo-box {
+      width: min(420px, 92vw);
+      margin: 0 auto 18px;
+      padding: 18px 22px;
+      border: 2px dashed rgba(142, 106, 183, 0.45);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--lavender-dark);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      color: var(--lavender-dark);
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin: 14px auto 0;
+      font-size: 1.06rem;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .status-panel {
+      width: min(1080px, 92vw);
+      margin: 0 auto 24px;
+      padding: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-radius: 20px;
+      background: var(--white);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(142, 106, 183, 0.18);
+    }
+
+    .progress-text {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--lavender-dark);
+    }
+
+    .progress-bar {
+      flex: 1 1 260px;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--lavender-light);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--lavender), #b392d3);
+      transition: width 0.3s ease;
+    }
+
+    main {
+      width: min(1080px, 92vw);
+      margin: 0 auto 54px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .task-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      padding: 22px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(142, 106, 183, 0.20);
+      box-shadow: var(--shadow);
+    }
+
+    .task-card::before {
+      content: '';
+      position: absolute;
+      top: -35px;
+      right: -35px;
+      width: 105px;
+      height: 105px;
+      border-radius: 50%;
+      background: rgba(142, 106, 183, 0.12);
+    }
+
+    .task-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--lavender-light);
+      color: var(--lavender-dark);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      position: relative;
+      margin: 0 0 14px;
+      font-size: 1.35rem;
+      color: var(--lavender-dark);
+    }
+
+    .task-actions {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .arrow-sequence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.arrow-tile {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #f4edff;
+  border: 2px solid #b68be8;
+  color: #6b3fa0;
+  font-size: 32px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(95, 63, 134, 0.18);
+    }
+
+    .info-btn {
+      background: var(--lavender-light);
+      color: var(--lavender-dark);
+    }
+
+    .check-btn {
+      background: var(--lavender);
+      color: var(--white);
+    }
+
+    .instruction {
+      display: none;
+      position: relative;
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: var(--lavender-soft);
+      border-left: 4px solid var(--lavender);
+      line-height: 1.55;
+      color: #46394f;
+    }
+
+    .instruction.visible {
+      display: block;
+    }
+
+    .code-row {
+      position: relative;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(142, 106, 183, 0.35);
+      outline: none;
+      font-family: inherit;
+      font-size: 1rem;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    input:focus {
+      border-color: var(--lavender);
+      box-shadow: 0 0 0 4px rgba(142, 106, 183, 0.12);
+    }
+
+    input:disabled {
+      background: #f3eef8;
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    .message {
+      min-height: 22px;
+      margin-top: 10px;
+      font-weight: 700;
+    }
+
+    .message.ok {
+      color: var(--success);
+    }
+
+    .message.bad {
+      color: var(--error);
+    }
+
+    .final-message {
+      width: min(1080px, 92vw);
+      margin: 0 auto 56px;
+      padding: 28px;
+      display: none;
+      text-align: center;
+      border-radius: 26px;
+      background: linear-gradient(135deg, #ffffff, #f0e5fa);
+      border: 2px solid rgba(142, 106, 183, 0.35);
+      box-shadow: var(--shadow);
+    }
+
+    .final-message.visible {
+      display: block;
+    }
+
+    .final-message h2 {
+      font-size: clamp(1.7rem, 4vw, 2.7rem);
+      margin-bottom: 12px;
+    }
+
+    .final-message p {
+      margin: 0 auto;
+      max-width: 750px;
+      font-size: 1.15rem;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    footer {
+      text-align: center;
+      padding: 0 18px 34px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 780px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .code-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .check-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+   
+    <h1>Sekret Lawendowego Pola</h1>
+    <p class="subtitle">
+     Odpowiedzi do zagadek to liczby jedno, dwu, lub czterocyfrowe. 
+    </p>
+  </header>
+
+  <section class="status-panel" aria-label="Postęp gry">
+    <div class="progress-text" id="progressText">Rozwiązano: 0 / 10</div>
+    <div class="progress-bar" aria-hidden="true">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </section>
+
+  <main id="tasksContainer"></main>
+
+  <section class="final-message" id="finalMessage">
+    <h2>Lawendowy skarb został odnaleziony!</h2>
+    <p>
+      Gratulacje, Poszukiwacze! Odczytaliście wszystkie znaki dawnego strażnika i udowodniliście, że skarb może trafić w dobre ręce. Udajcie się teraz do miejsca finału i podajcie hasło: <strong>LAWENDOWA TAJEMNICA</strong>.
+    </p>
+  </section>
+
+  <footer>
+    Lovenda Kujawska · gra terenowa
+  </footer>
+
+  <script>
+    /*
+      Tutaj zmieniasz poprawne kody.
+      Możesz wpisać jeden kod, np. ['1234'], albo kilka poprawnych wersji, np. ['1234', '12 34', 'LAWENDA'].
+    */
+    const puzzles = [
+      {
+        title: 'Droga do ula',
+        codes: ['57','75'],
+        instruction: 'Dopasowany ul wskaże dwie pszczoły.'
+      },
+      {
+        title: 'Ukryta wskazówka',
+        codes: ['8'],
+        instruction: 'Magnetyczna siła poniesie ukrytą wskazówkę aż do samej góry.'
+      },
+      {
+        title: 'Ukryte Słowa',
+        codes: ['47'],
+        instruction: 'Karta gracza zawiera niezbędne szczątki informacji, które połączone, dadzą ukryte słowa.'
+      },
+      {
+        title: 'Wielcy budowniczy',
+         codes: ['4'],
+        instruction: `
+         <p>Który bóbr trafi tą ścieżką nad rzekę?</p>
+
+        <div class="arrow-sequence">
+          <div class="arrow-tile">↑</div>
+          <div class="arrow-tile">↑</div>
+          <div class="arrow-tile">←</div>
+          <div class="arrow-tile">↓</div>
+          <div class="arrow-tile">←</div>
+          <div class="arrow-tile">←</div>
+          <div class="arrow-tile">↑</div>
+          <div class="arrow-tile">↑</div>
+        </div>
+  `
+},
+      {
+        title: 'Stare drzewa',
+        codes: ['94'],
+        instruction: 'Znajdź drzewa umieszczone na wszystkich stronach świata. Zsumuj wysokość Ani i wiek Alberta.'
+      },
+      {
+        title: 'Zaginiony dziennik',
+        codes: ['83'],
+        instruction: 'Lokalizacje dzienników: XX, XX. Z każdego odczytaj jedną cyfrę.'
+      },
+      {
+        title: 'Szlak strażnika',
+        codes: ['5'],
+        instruction: 'Mała tabliczka start rozpoczyna układ. Podążanie za strzałkami uformuje cyfrę.'
+      },
+      {
+        title: 'Zapiski',
+        codes: ['7158'],
+        instruction: 'Odpowiedź zawarta jest starych zapiskach leśniczego na karcie gracza.'
+      },
+      {
+        title: 'Mechanizm',
+        codes: ['4573'],
+        instruction: 'Obracanie mechanizmamiukaże 4 cyfry. Kod należy wpisać od najmniejszej do największej.'
+      },
+      {
+        title: 'Motyle Lawendowego Pola',
+        codes: ['9'],
+        instruction: 'Ile motyli znajduje się na obrazie?'
+      }
+    ];
+
+    const tasksContainer = document.getElementById('tasksContainer');
+    const progressText = document.getElementById('progressText');
+    const progressFill = document.getElementById('progressFill');
+    const finalMessage = document.getElementById('finalMessage');
+
+    const solved = new Array(puzzles.length).fill(false);
+
+    function normalizeCode(value) {
+      return String(value)
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, '');
+    }
+
+    function renderTasks() {
+      puzzles.forEach((puzzle, index) => {
+        const card = document.createElement('article');
+        card.className = 'task-card';
+
+        card.innerHTML = `
+          <div class="task-number">${index + 1}</div>
+          <h2>${puzzle.title}</h2>
+          <div class="task-actions">
+            <button class="info-btn" type="button" data-info="${index}">Pokaż instrukcję</button>
+          </div>
+         <div class="instruction" id="instruction-${index}">${puzzle.instruction}</div>
+          <div class="code-row">
+            <input type="text" id="code-${index}" placeholder="Wpisz kod z zadania" autocomplete="off" />
+            <button class="check-btn" type="button" data-check="${index}">Sprawdź</button>
+          </div>
+          <div class="message" id="message-${index}"></div>
+        `;
+
+        tasksContainer.appendChild(card);
+      });
+    }
+
+    function updateProgress() {
+      const solvedCount = solved.filter(Boolean).length;
+      progressText.textContent = `Rozwiązano: ${solvedCount} / ${puzzles.length}`;
+      progressFill.style.width = `${(solvedCount / puzzles.length) * 100}%`;
+
+      if (solvedCount === puzzles.length) {
+        finalMessage.classList.add('visible');
+        finalMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function toggleInstruction(index, button) {
+      const instruction = document.getElementById(`instruction-${index}`);
+      instruction.classList.toggle('visible');
+      button.textContent = instruction.classList.contains('visible') ? 'Ukryj instrukcję' : 'Pokaż instrukcję';
+    }
+
+    function checkCode(index) {
+      const input = document.getElementById(`code-${index}`);
+      const message = document.getElementById(`message-${index}`);
+      const enteredCode = normalizeCode(input.value);
+      const validCodes = puzzles[index].codes.map(normalizeCode);
+
+      if (validCodes.includes(enteredCode)) {
+        solved[index] = true;
+        input.disabled = true;
+        message.textContent = 'Dobrze! Kod został zaliczony.';
+        message.className = 'message ok';
+        updateProgress();
+      } else {
+        message.textContent = 'To jeszcze nie ten kod. Spróbujcie ponownie.';
+        message.className = 'message bad';
+      }
+    }
+
+    tasksContainer.addEventListener('click', (event) => {
+      const infoIndex = event.target.dataset.info;
+      const checkIndex = event.target.dataset.check;
+
+      if (infoIndex !== undefined) {
+        toggleInstruction(Number(infoIndex), event.target);
+      }
+
+      if (checkIndex !== undefined) {
+        checkCode(Number(checkIndex));
+      }
+    });
+
+    tasksContainer.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && event.target.tagName === 'INPUT') {
+        const index = Number(event.target.id.replace('code-', ''));
+        checkCode(index);
+      }
+    });
+
+    renderTasks();
+    updateProgress();
+  </script>
+</body>
+</html>
