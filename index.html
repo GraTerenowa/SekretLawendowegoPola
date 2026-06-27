@@ -428,13 +428,7 @@ function loadProgress() {
       {
         title: 'Stare drzewa',
         codes: ['94'],
-        instruction: 'Znajdź małe tabliczki z drzewami umieszczone w poniższych kierunkach świata: 
-          Południowy wschód (SE) 
-          Zachód (W)
-          Północ (N)
-          Wschód (E)
-          Dwie tabliczki są tylko zmyłką.
-          Zsumuj wysokość Ani i wiek Alberta.'
+        instruction: 'Znajdź małe tabliczki z drzewami umieszczone w poniższych kierunkach świata: Południowy wschód (SE) Zachód (W) Północ (N) Wschód (E). Dwie tabliczki są tylko zmyłką. Zsumuj wysokość Ani i wiek Alberta.'
       },
       {
         title: 'Zaginiony dziennik',
@@ -446,28 +440,24 @@ function loadProgress() {
         codes: ['5'],
         instruction: 'Mała tabliczka START rozpoczyna układ. Podążanie za strzałkami uformuje cyfrę.'
       },
-      
+      {
         title: 'Zapiski',
         codes: ['7158'],
         instruction: 'Odpowiedź zawarta jest starej notatce leśniczego, która znajduje się w jego zapisach na karcie gracza.'
-      },
-      {
-        title: 'Mechanizm',
-        codes: ['4573'],
-        instruction: 
-        <p>
-   Obracanie mechanizmami ukaże 4 cyfry. Kod należy wpisać od 
-    <span class="small-word">najmniejszej</span> 
-    do
-    <span class="big-word">największej</span> 
-    .
-  </p>
-      },
+      },   
+ {
+  title: 'Mechanizm',
+  codes: ['4573'],
+  instruction: 'Obracanie mechanizmami ukaże 4 cyfry. Kod należy wpisać od <small>najmniejszej</small> do <strong style="font-size: 32px;">największej</strong>.'
+},
+  
+    
       {
         title: 'Motyle Lawendowego Pola',
         codes: ['9'],
         instruction: 'Ile motyli znajduje się na obrazie?'
       }
+      
     ];
 
     const tasksContainer = document.getElementById('tasksContainer');
