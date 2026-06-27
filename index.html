@@ -159,9 +159,10 @@
     }
     .arrow-sequence {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 14px;
+  align-items: flex-start;
 }
 
 .arrow-tile {
@@ -177,7 +178,6 @@
   align-items: center;
   justify-content: center;
 }
-
     button {
       border: 0;
       border-radius: 999px;
@@ -202,7 +202,16 @@
       background: var(--lavender);
       color: var(--white);
     }
+.small-word {
+  font-size: 11px;
+  color: #7a5c9e;
+}
 
+.big-word {
+  font-size: 32px;
+  font-weight: 800;
+  color: #6b3fa0;
+}
     .instruction {
       display: none;
       position: relative;
@@ -334,9 +343,9 @@
   <main id="tasksContainer"></main>
 
   <section class="final-message" id="finalMessage">
-    <h2>Lawendowy skarb został odnaleziony!</h2>
+    <h2>Lokalizacja skarbu została odkryta!</h2>
     <p>
-      Gratulacje, Poszukiwacze! Odczytaliście wszystkie znaki dawnego strażnika i udowodniliście, że skarb może trafić w dobre ręce. Udajcie się teraz do miejsca finału i podajcie hasło: <strong>LAWENDOWA TAJEMNICA</strong>.
+      Gratulacje, Poszukiwacze! Odczytaliście wszystkie znaki dawnego strażnika i udowodniliście, że skarb może trafić w dobre ręce. Udajcie się teraz do SKLEPIKU i podajcie hasło: <strong>LAWENDOWA TAJEMNICA</strong>.
     </p>
   </section>
 
@@ -345,6 +354,39 @@
   </footer>
 
   <script>
+    document.addEventListener('input', function(event) {
+  if (event.target.classList.contains('code-input')) {
+    saveProgress();
+  }
+});
+
+window.addEventListener('load', loadProgress);
+function loadProgress() {
+  const saved = localStorage.getItem('lawendaProgress');
+
+  if (!saved) return;
+
+  const answers = JSON.parse(saved);
+  const inputs = document.querySelectorAll('.code-input');
+
+  inputs.forEach(input => {
+    const taskNumber = input.dataset.task;
+
+    if (answers[taskNumber]) {
+      input.value = answers[taskNumber];
+    }
+  });
+}
+    function saveProgress() {
+  const inputs = document.querySelectorAll('.code-input');
+  const answers = [];
+
+  inputs.forEach(input => {
+    answers[input.dataset.task] = input.value;
+  });
+
+  localStorage.setItem('lawendaProgress', JSON.stringify(answers));
+}
     /*
       Tutaj zmieniasz poprawne kody.
       Możesz wpisać jeden kod, np. ['1234'], albo kilka poprawnych wersji, np. ['1234', '12 34', 'LAWENDA'].
@@ -353,7 +395,7 @@
       {
         title: 'Droga do ula',
         codes: ['57','75'],
-        instruction: 'Dopasowany ul wskaże dwie pszczoły.'
+        instruction: 'Dopasuj ul na dwa sposoby, aby wskazał dwie pszczoły.'
       },
       {
         title: 'Ukryta wskazówka',
@@ -369,7 +411,7 @@
         title: 'Wielcy budowniczy',
          codes: ['4'],
         instruction: `
-         <p>Który bóbr trafi tą ścieżką nad rzekę?</p>
+         <p>Tylko jeden bóbr trafi tą scieżką nad rzekę. Który?</p>
 
         <div class="arrow-sequence">
           <div class="arrow-tile">↑</div>
@@ -386,27 +428,40 @@
       {
         title: 'Stare drzewa',
         codes: ['94'],
-        instruction: 'Znajdź drzewa umieszczone na wszystkich stronach świata. Zsumuj wysokość Ani i wiek Alberta.'
+        instruction: 'Znajdź małe tabliczki z drzewami umieszczone w poniższych kierunkach świata: 
+          Południowy wschód (SE) 
+          Zachód (W)
+          Północ (N)
+          Wschód (E)
+          Dwie tabliczki są tylko zmyłką.
+          Zsumuj wysokość Ani i wiek Alberta.'
       },
       {
         title: 'Zaginiony dziennik',
         codes: ['83'],
-        instruction: 'Lokalizacje dzienników: XX, XX. Z każdego odczytaj jedną cyfrę.'
+        instruction: 'Lokalizacje dzienników: P5, X7. Z każdego odczytaj jedną cyfrę.'
       },
       {
         title: 'Szlak strażnika',
         codes: ['5'],
-        instruction: 'Mała tabliczka start rozpoczyna układ. Podążanie za strzałkami uformuje cyfrę.'
+        instruction: 'Mała tabliczka START rozpoczyna układ. Podążanie za strzałkami uformuje cyfrę.'
       },
-      {
+      
         title: 'Zapiski',
         codes: ['7158'],
-        instruction: 'Odpowiedź zawarta jest starych zapiskach leśniczego na karcie gracza.'
+        instruction: 'Odpowiedź zawarta jest starej notatce leśniczego, która znajduje się w jego zapisach na karcie gracza.'
       },
       {
         title: 'Mechanizm',
         codes: ['4573'],
-        instruction: 'Obracanie mechanizmamiukaże 4 cyfry. Kod należy wpisać od najmniejszej do największej.'
+        instruction: 
+        <p>
+   Obracanie mechanizmami ukaże 4 cyfry. Kod należy wpisać od 
+    <span class="small-word">najmniejszej</span> 
+    do
+    <span class="big-word">największej</span> 
+    .
+  </p>
       },
       {
         title: 'Motyle Lawendowego Pola',
