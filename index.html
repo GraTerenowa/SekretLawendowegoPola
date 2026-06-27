@@ -354,39 +354,6 @@
   </footer>
 
   <script>
-    document.addEventListener('input', function(event) {
-  if (event.target.classList.contains('code-input')) {
-    saveProgress();
-  }
-});
-
-window.addEventListener('load', loadProgress);
-function loadProgress() {
-  const saved = localStorage.getItem('lawendaProgress');
-
-  if (!saved) return;
-
-  const answers = JSON.parse(saved);
-  const inputs = document.querySelectorAll('.code-input');
-
-  inputs.forEach(input => {
-    const taskNumber = input.dataset.task;
-
-    if (answers[taskNumber]) {
-      input.value = answers[taskNumber];
-    }
-  });
-}
-    function saveProgress() {
-  const inputs = document.querySelectorAll('.code-input');
-  const answers = [];
-
-  inputs.forEach(input => {
-    answers[input.dataset.task] = input.value;
-  });
-
-  localStorage.setItem('lawendaProgress', JSON.stringify(answers));
-}
     /*
       Tutaj zmieniasz poprawne kody.
       Możesz wpisać jeden kod, np. ['1234'], albo kilka poprawnych wersji, np. ['1234', '12 34', 'LAWENDA'].
@@ -394,7 +361,7 @@ function loadProgress() {
     const puzzles = [
       {
         title: 'Droga do ula',
-        codes: ['57','75'],
+        codes: ['57', '75'],
         instruction: 'Dopasuj ul na dwa sposoby, aby wskazał dwie pszczoły.'
       },
       {
@@ -409,22 +376,22 @@ function loadProgress() {
       },
       {
         title: 'Wielcy budowniczy',
-         codes: ['4'],
+        codes: ['4'],
         instruction: `
-         <p>Tylko jeden bóbr trafi tą scieżką nad rzekę. Który?</p>
+          <p>Tylko jeden bóbr trafi tą ścieżką nad rzekę. Który?</p>
 
-        <div class="arrow-sequence">
-          <div class="arrow-tile">↑</div>
-          <div class="arrow-tile">↑</div>
-          <div class="arrow-tile">←</div>
-          <div class="arrow-tile">↓</div>
-          <div class="arrow-tile">←</div>
-          <div class="arrow-tile">←</div>
-          <div class="arrow-tile">↑</div>
-          <div class="arrow-tile">↑</div>
-        </div>
-  `
-},
+          <div class="arrow-sequence">
+            <div class="arrow-tile">↑</div>
+            <div class="arrow-tile">↑</div>
+            <div class="arrow-tile">←</div>
+            <div class="arrow-tile">↓</div>
+            <div class="arrow-tile">←</div>
+            <div class="arrow-tile">←</div>
+            <div class="arrow-tile">↑</div>
+            <div class="arrow-tile">↑</div>
+          </div>
+        `
+      },
       {
         title: 'Stare drzewa',
         codes: ['94'],
@@ -444,28 +411,26 @@ function loadProgress() {
         title: 'Zapiski',
         codes: ['7158'],
         instruction: 'Odpowiedź zawarta jest starej notatce leśniczego, która znajduje się w jego zapisach na karcie gracza.'
-      },   
- {
-  title: 'Mechanizm',
-  codes: ['4573'],
-  instruction: 'Obracanie mechanizmami ukaże 4 cyfry. Kod należy wpisać od <small>najmniejszej</small> do <strong style="font-size: 32px;">największej</strong>.'
-},
-  
-    
+      },
+      {
+        title: 'Mechanizm',
+        codes: ['4573'],
+        instruction: 'Obracanie mechanizmami ukaże 4 cyfry. Kod należy wpisać od <small>najmniejszej</small> do <strong style="font-size: 32px;">największej</strong>.'
+      },
       {
         title: 'Motyle Lawendowego Pola',
         codes: ['9'],
         instruction: 'Ile motyli znajduje się na obrazie?'
       }
-      
     ];
+
+    const STORAGE_KEY = 'sekretLawendowegoPola_progress_v1';
+    const solved = new Array(puzzles.length).fill(false);
 
     const tasksContainer = document.getElementById('tasksContainer');
     const progressText = document.getElementById('progressText');
     const progressFill = document.getElementById('progressFill');
     const finalMessage = document.getElementById('finalMessage');
-
-    const solved = new Array(puzzles.length).fill(false);
 
     function normalizeCode(value) {
       return String(value)
@@ -474,7 +439,95 @@ function loadProgress() {
         .replace(/\s+/g, '');
     }
 
+    function isCorrectAnswer(index, value) {
+      const enteredCode = normalizeCode(value);
+      const validCodes = puzzles[index].codes.map(normalizeCode);
+      return enteredCode !== '' && validCodes.includes(enteredCode);
+    }
+
+    function readStorage() {
+      try {
+        return localStorage.getItem(STORAGE_KEY);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function writeStorage(value) {
+      try {
+        localStorage.setItem(STORAGE_KEY, value);
+      } catch (error) {
+        // Gdy przeglądarka blokuje localStorage, strona dalej działa, ale bez zapisu.
+      }
+    }
+
+    function removeStorage() {
+      try {
+        removeStorage();
+      } catch (error) {
+        // Brak akcji — reset nie zablokuje działania strony.
+      }
+    }
+
+    function saveProgress() {
+      const answers = puzzles.map((puzzle, index) => {
+        const input = document.getElementById(`code-${index}`);
+        return input ? input.value : '';
+      });
+
+      const progress = {
+        answers,
+        savedAt: new Date().toISOString()
+      };
+
+      writeStorage(JSON.stringify(progress));
+    }
+
+    function loadProgress() {
+      const saved = readStorage();
+      if (!saved) return;
+
+      let progress;
+
+      try {
+        progress = JSON.parse(saved);
+      } catch (error) {
+        return;
+      }
+
+      const answers = Array.isArray(progress) ? progress : progress.answers;
+      if (!Array.isArray(answers)) return;
+
+      answers.forEach((answer, index) => {
+        const input = document.getElementById(`code-${index}`);
+        const message = document.getElementById(`message-${index}`);
+
+        if (!input || index >= puzzles.length) return;
+
+        input.value = answer || '';
+
+        if (isCorrectAnswer(index, input.value)) {
+          solved[index] = true;
+          input.disabled = true;
+
+          if (message) {
+            message.textContent = 'Dobrze! Kod został zaliczony.';
+            message.className = 'message ok';
+          }
+        }
+      });
+
+      updateProgress(false);
+    }
+
+    function resetProgress() {
+      removeStorage();
+      location.reload();
+    }
+
     function renderTasks() {
+      tasksContainer.innerHTML = '';
+
       puzzles.forEach((puzzle, index) => {
         const card = document.createElement('article');
         card.className = 'task-card';
@@ -485,9 +538,9 @@ function loadProgress() {
           <div class="task-actions">
             <button class="info-btn" type="button" data-info="${index}">Pokaż instrukcję</button>
           </div>
-         <div class="instruction" id="instruction-${index}">${puzzle.instruction}</div>
+          <div class="instruction" id="instruction-${index}">${puzzle.instruction}</div>
           <div class="code-row">
-            <input type="text" id="code-${index}" placeholder="Wpisz kod z zadania" autocomplete="off" />
+            <input class="code-input" type="text" id="code-${index}" data-index="${index}" placeholder="Wpisz kod z zadania" autocomplete="off" />
             <button class="check-btn" type="button" data-check="${index}">Sprawdź</button>
           </div>
           <div class="message" id="message-${index}"></div>
@@ -497,14 +550,19 @@ function loadProgress() {
       });
     }
 
-    function updateProgress() {
+    function updateProgress(shouldScroll = true) {
       const solvedCount = solved.filter(Boolean).length;
       progressText.textContent = `Rozwiązano: ${solvedCount} / ${puzzles.length}`;
       progressFill.style.width = `${(solvedCount / puzzles.length) * 100}%`;
 
       if (solvedCount === puzzles.length) {
         finalMessage.classList.add('visible');
-        finalMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        if (shouldScroll) {
+          finalMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else {
+        finalMessage.classList.remove('visible');
       }
     }
 
@@ -517,19 +575,22 @@ function loadProgress() {
     function checkCode(index) {
       const input = document.getElementById(`code-${index}`);
       const message = document.getElementById(`message-${index}`);
-      const enteredCode = normalizeCode(input.value);
-      const validCodes = puzzles[index].codes.map(normalizeCode);
 
-      if (validCodes.includes(enteredCode)) {
+      if (!input || !message) return;
+
+      if (isCorrectAnswer(index, input.value)) {
         solved[index] = true;
         input.disabled = true;
         message.textContent = 'Dobrze! Kod został zaliczony.';
         message.className = 'message ok';
-        updateProgress();
       } else {
+        solved[index] = false;
         message.textContent = 'To jeszcze nie ten kod. Spróbujcie ponownie.';
         message.className = 'message bad';
       }
+
+      saveProgress();
+      updateProgress();
     }
 
     tasksContainer.addEventListener('click', (event) => {
@@ -552,8 +613,24 @@ function loadProgress() {
       }
     });
 
+    tasksContainer.addEventListener('input', (event) => {
+      if (event.target.classList.contains('code-input')) {
+        saveProgress();
+      }
+    });
+
+    window.addEventListener('beforeunload', saveProgress);
+    window.addEventListener('pagehide', saveProgress);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        saveProgress();
+      }
+    });
+
     renderTasks();
-    updateProgress();
+    loadProgress();
+    updateProgress(false);
   </script>
 </body>
 </html>
